@@ -1,29 +1,7 @@
-Perk TOUGH_BODY
-{
-  defenseDamageFactor=-10000
-  chance=0.1
-  iconFrames=90
-  defense="BodyDefense"
 
-  Trigger TOUGH_BODY
-  {
-    Event
-    {
-      return "PreHit"
-    }
-    
-    Condition
-    {
-      return AND ( event.Target=="Me", event.Defense==defense, not event.Block, random() < chance )
-    }
-    
-    Action
-    {
-      ModAttributes ( Player="Enemy", DamageFactor=defenseDamageFactor, Frames=1 )
-      ModIcon ( Name="Icon", Frames=iconFrames )
-    }
-  }
-}
+
+
+
 
 
 Perk IRON_HEAD{
@@ -40,7 +18,7 @@ Perk IRON_HEAD{
     }
 
     Condition{
-      return AND (event.Target = "Me" , event.Defense==defense, event.Critical == true , not event.Block, random() < chance)
+      return AND (event.Target == "Me" , event.Defense==defense, event.Critical == true , not event.Block, random() < chance)
     }
 
     Action{
@@ -54,103 +32,10 @@ Perk IRON_HEAD{
 
 
 
-Perk HELM_BREAKER
-{
-  attackDamageFactor = 10000
-  chance = 0.2
-  iconFrames = 300
-  iconDebuff = 600
-  defense = "HeadDefense"
-
-
-  Trigger HELM_BREAKER_FIGHT_START{
-    Event{
-      return "FightStart"
-    }
-
-    Condition{
-      return AND(event.Target = "Enemy" , event.Defense =defense, random() < chance , not ModExists(Name = "Fight"))
-    }
-
-    Action{
-      ModIcon(Name = "Fight",Frames = iconDebuff , Player="Me")
-    }
-
-  }
-
-
-  Trigger HELM_BREAKER_BOOST
-  {
-    Event
-    {
-      return "PreHit"
-    }
-    
-    Condition
-    {
-      return AND ( event.Target=="Enemy", event.Defense==defense, not event.Block, random() < chance, not ModExists ( Name = "Icon" ) )
-    }
-    
-    Action
-    {
-      ModIcon ( Name="Icon", Frames=iconFrames, Player="Enemy" )
-    }
-
-  }
-
-
-  Trigger HELM_BREAKER_BOOST_END
-  {
-    Event
-    {
-      return "PreHit"
-    }
-    
-    Condition
-    {
-      return AND ( event.Player="Enemy", event.Defense=defense, not event.Block, ModExists ( Name = "Icon" ) )
-    }
-    
-    Action
-    {
-      ModAttributes ( DamageFactor=attackDamageFactor, Frames="1" )
-    }
-
-  }
-
-}
 
 
 
 
-
-
-
-Perk SHIELDING
-{
-  damageFactor=-10000
-  frames=300
-  chance=0.3
-
-  Trigger SHIELDING
-  {
-    Event
-    {
-      return "PostHit"
-    }
-    
-    Condition
-    {
-      return AND ( event.Target=="Me", random () < chance, not ModExists ( "Shielding" )  )
-    }
-    
-    Action
-    {
-      ModAttributes ( Name="Shielding", DamageFactor=damageFactor, Frames=frames, Player="Enemy" )
-      ModIcon ( Name="Icon", Frames=frames )
-    }
-  }
-}
 
 
 
@@ -223,6 +108,187 @@ Perk FITNESS
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Perk HELM_BREAKER
+{
+  attackDamageFactor = 10000
+  chance = 0.2
+  iconFrames = 300
+  TimerFrames = 600
+  defense = "HeadDefense"
+
+
+  Trigger HELM_BREAKER_FIGHT_START{
+    Event{
+      return "FightStart"
+    }
+
+    Condition{
+      return true
+    }
+
+    Action{
+      ModFlag(Name="Timer", Frames = TimerFrames)
+    }
+
+  }
+
+
+  Trigger HELM_BREAKER_BOOST
+  {
+    Event
+    {
+      return "PreHit"
+    }
+    
+    Condition
+    {
+      return AND ( event.Target=="Enemy", event.Defense==defense, not event.Block, random() < chance, not ModExists ( Name = "Icon" ), not ModExists(Name = "Timer"))
+    }
+    
+    Action
+    {
+      ModIcon ( Name="Icon", Frames=iconFrames, Player="Enemy" )
+    }
+
+  }
+
+
+  Trigger HELM_BREAKER_BOOST_END
+  {
+    Event
+    {
+      return "PreHit"
+    }
+    
+    Condition
+    {
+      return AND ( event.Player="Enemy", event.Defense=defense, not event.Block, ModExists ( Name = "Icon" ) )
+    }
+    
+    Action
+    {
+      ModAttributes ( DamageFactor=attackDamageFactor, Frames="1" )
+    }
+
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Perk TOUGH_BODY
+{
+  defenseDamageFactor=-10000
+  chance=0.1
+  iconFrames=90
+  defense="BodyDefense"
+
+  Trigger TOUGH_BODY
+  {
+    Event
+    {
+      return "PreHit"
+    }
+    
+    Condition
+    {
+      return AND ( event.Target=="Me", event.Defense==defense, not event.Block, random() < chance )
+    }
+    
+    Action
+    {
+      ModAttributes ( Player="Enemy", DamageFactor=defenseDamageFactor, Frames=1 )
+      ModIcon ( Name="Icon", Frames=iconFrames )
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Perk SHIELDING
+{
+  damageFactor=-10000
+  frames=300
+  chance=0.3
+
+  Trigger SHIELDING
+  {
+    Event
+    {
+      return "PostHit"
+    }
+    
+    Condition
+    {
+      return AND ( event.Target=="Me", random () < chance, not ModExists ( "Shielding" )  )
+    }
+    
+    Action
+    {
+      ModAttributes ( Name="Shielding", DamageFactor=damageFactor, Frames=frames, Player="Enemy" )
+      ModIcon ( Name="Icon", Frames=frames )
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Perk RAGE
 {
   attackBoostChance = 0.3
@@ -245,6 +311,7 @@ Perk RAGE
       CreateEvent ( "Success" )
     }
   }
+
   Trigger RAGE_CHECK_FAIL
   {
     Event
@@ -262,6 +329,7 @@ Perk RAGE
       CreateEvent ( "Fail" )
     }
   }
+
   Trigger RAGE_SUCCESS_ICON
   {
     Event
