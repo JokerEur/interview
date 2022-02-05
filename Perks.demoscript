@@ -1,0 +1,317 @@
+Perk TOUGH_BODY
+{
+  defenseDamageFactor=-10000
+  chance=0.1
+  iconFrames=90
+  defense="BodyDefense"
+
+  Trigger TOUGH_BODY
+  {
+    Event
+    {
+      return "PreHit"
+    }
+    
+    Condition
+    {
+      return AND ( event.Target=="Me", event.Defense==defense, not event.Block, random() < chance )
+    }
+    
+    Action
+    {
+      ModAttributes ( Player="Enemy", DamageFactor=defenseDamageFactor, Frames=1 )
+      ModIcon ( Name="Icon", Frames=iconFrames )
+    }
+  }
+}
+
+
+Perk IRON_HEAD{
+
+  chance = 0.25
+  defense = "HeadDefense"
+  defenseDamageFactor = -17000
+  iconFrames = 90
+
+  Trigger IRON_HEAD{
+
+    Event {
+      return "PreHit"
+    }
+
+    Condition{
+      return AND (event.Target = "Me" , event.Defense==defense, event.Critical == true , not event.Block, random() < chance)
+    }
+
+    Action{
+      ModAttributes (Player= "Enemy" , DamageFactor = defenseDamageFactor, Frames = 1)
+    }
+  }
+}
+
+
+
+
+
+
+Perk HELM_BREAKER
+{
+  attackDamageFactor = 10000
+  chance = 0.2
+  iconFrames = 300
+  iconDebuff = 600
+  defense = "HeadDefense"
+
+
+  Trigger HELM_BREAKER_FIGHT_START{
+    Event{
+      return "FightStart"
+    }
+
+    Condition{
+      return AND(event.Target = "Enemy" , event.Defense =defense, random() < chance , not ModExists(Name = "Fight"))
+    }
+
+    Action{
+      ModIcon(Name = "Fight",Frames = iconDebuff , Player="Me")
+    }
+
+  }
+
+
+  Trigger HELM_BREAKER_BOOST
+  {
+    Event
+    {
+      return "PreHit"
+    }
+    
+    Condition
+    {
+      return AND ( event.Target=="Enemy", event.Defense==defense, not event.Block, random() < chance, not ModExists ( Name = "Icon" ) )
+    }
+    
+    Action
+    {
+      ModIcon ( Name="Icon", Frames=iconFrames, Player="Enemy" )
+    }
+
+  }
+
+
+  Trigger HELM_BREAKER_BOOST_END
+  {
+    Event
+    {
+      return "PreHit"
+    }
+    
+    Condition
+    {
+      return AND ( event.Player="Enemy", event.Defense=defense, not event.Block, ModExists ( Name = "Icon" ) )
+    }
+    
+    Action
+    {
+      ModAttributes ( DamageFactor=attackDamageFactor, Frames="1" )
+    }
+
+  }
+
+}
+
+
+
+
+
+
+
+Perk SHIELDING
+{
+  damageFactor=-10000
+  frames=300
+  chance=0.3
+
+  Trigger SHIELDING
+  {
+    Event
+    {
+      return "PostHit"
+    }
+    
+    Condition
+    {
+      return AND ( event.Target=="Me", random () < chance, not ModExists ( "Shielding" )  )
+    }
+    
+    Action
+    {
+      ModAttributes ( Name="Shielding", DamageFactor=damageFactor, Frames=frames, Player="Enemy" )
+      ModIcon ( Name="Icon", Frames=frames )
+    }
+  }
+}
+
+
+
+
+
+
+
+
+Perk FITNESS
+{
+  attackBoostChance = 0.3
+  attackAnyBoostChance = 0.02
+  defenseBoostChance = 0.1
+  attackDamageFactor = 10000
+  defenseDamageFactor = -66439
+
+  Trigger FITNESS_ATTACK
+  {
+    Event
+    {
+      return "PreHit"
+    }
+    
+    Condition
+    {
+      return AND ( event.Target=="Enemy", event.Animation=="Unarmed", random() < attackBoostChance )
+    }
+    
+    Action
+    {
+      ModAttributes ( DamageFactor=attackDamageFactor, Frames=1, Player="Me" )
+    }
+  }
+
+
+  Trigger FITNESS_ANY_ATTACK{
+    Event{
+      return "PreHit"
+    }
+
+    Condition{
+      return AND ( event.Target == "Enemy" , OR(event.Animation == "Unarmed",event.Animation == "Weapon"), random < attackAnyBoostChance)
+    }
+
+    Action{
+      ModAttributes ( damageFactor = attackBoostChance, frames =1, Player "Me")
+    }
+
+  }
+
+
+  Trigger FITNESS_DEFENSE
+  {
+    Event
+    {
+      return "PreHit"
+    }
+    
+    Condition
+    {
+      return AND ( event.Target=="Me", random() < defenseBoostChance )
+    }
+    
+    Action
+    {
+      ModAttributes ( DamageFactor=defenseDamageFactor, Frames=1, Player="Enemy" )
+    }
+  }
+
+}
+
+
+Perk RAGE
+{
+  attackBoostChance = 0.3
+  attackDamageFactor = 2630
+
+  Trigger RAGE_CHECK_SUCCESS
+  {
+    Event
+    {
+      return "PreHit"
+    }
+    
+    Condition
+    {
+      return AND ( event.Target=="Enemy", not event.Block, random() < attackBoostChance )
+    }
+    
+    Action
+    {
+      CreateEvent ( "Success" )
+    }
+  }
+  Trigger RAGE_CHECK_FAIL
+  {
+    Event
+    {
+      return "PreHit"
+    }
+    
+    Condition
+    {
+      return AND ( event.Target=="Enemy", not event.Block, random() >= attackBoostChance )
+    }
+    
+    Action
+    {
+      CreateEvent ( "Fail" )
+    }
+  }
+  Trigger RAGE_SUCCESS_ICON
+  {
+    Event
+    {
+      return "Success"
+    }
+    
+    Condition
+    {
+      return not ModExists ( "Icon" )
+    }
+    
+    Action
+    {
+      ModIcon ( Name="Icon" )
+    }
+  }
+  Trigger RAGE_SUCCESS_DAMAGE
+  {
+    Event
+    {
+      return "Success"
+    }
+    
+    Condition
+    {
+      return true
+    }
+    
+    Action
+    {
+      ModAttributes ( Name="StackedBonus", DamageFactor=defenseDamageFactor, Player="Me" )
+    }
+  }
+  Trigger RAGE_FAIL
+  {
+    Event
+    {
+      return "Fail"
+    }
+    
+    Condition
+    {
+      return true
+    }
+    
+    Action
+    {
+      ClearMods ( Name="StackedBonus" )
+      ClearMods ( Name="Icon" )
+    }
+  }
+}
