@@ -81,7 +81,7 @@ Perk FITNESS
     }
 
     Action{
-      ModAttributes ( damageFactor = attackBoostChance, frames =1, Player "Me")
+      ModAttributes ( damageFactor = attackBoostChance, Frames =1, Player "Me")
     }
 
   }
@@ -123,7 +123,8 @@ Perk FITNESS
 
 Perk HELM_BREAKER
 {
-  attackDamageFactor = 10000
+  attackDamageFactorFirstHit = 10000
+  attackDamageFactor = 5000
   chance = 0.2
   iconFrames = 300
   TimerFrames = 600
@@ -180,9 +181,21 @@ Perk HELM_BREAKER
     
     Action
     {
-      ModAttributes ( DamageFactor=attackDamageFactor, Frames="1" )
+      ModAttributes ( Name ="FirstHit" ,DamageFactor=attackDamageFactorFirstHit, Frames= 1 )
     }
 
+  }
+  
+  Trigger HELM_BREAKER_BOOST_END2{
+    Event{
+      "PreHit"
+    }
+    Condition{
+      return AND( event.Player="Enemy", event.Defense=defense, not event.Block, ModExists ( Name = "Icon" ), not ModExists(Name = "FirstHit"))
+    }
+    Action{
+      ModAttributes( Name = "OtherHits" , DamageFactor = attackDamageFactor, Frames = iconFrames-1)
+    }
   }
 
 }
@@ -259,7 +272,7 @@ Perk SHIELDING
     
     Condition
     {
-      return AND ( event.Target=="Me", random () < chance, not ModExists ( "Shielding" )  )
+      return AND ( event.Target=="Me", random () < GetDamage("Me")*(chance/GetDamage("Me")), not ModExists ( "Shielding" )  )
     }
     
     Action
@@ -361,7 +374,7 @@ Perk RAGE
     
     Action
     {
-      ModAttributes ( Name="StackedBonus", DamageFactor=defenseDamageFactor, Player="Me" )
+      ModAttributes ( Name="StackedBonus", DamageFactor=attackDamageFactor, Player="Me" )
     }
   }
   Trigger RAGE_FAIL
